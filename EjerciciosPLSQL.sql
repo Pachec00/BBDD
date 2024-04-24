@@ -124,3 +124,34 @@ begin
         
 end;
 /
+
+/*Ejercicio 7*/
+
+declare
+    v_test varchar2(50);
+    v_nombre estudiantes.nombre%type;
+	v_apellidos estudiantes.apellidos%type;
+	v_encontrado boolean := false
+    cursor datos is select apellidos, nombre from estudiantes where nombre = 'Marta';
+    
+begin
+    open datos;
+	
+
+	while true loop
+        fetch datos into v_apellidos, v_nombre;
+		exit when datos%notfound;
+
+		DBMS_OUTPUT.PUT_LINE(v_apellidos || ', ' || v_nombre);
+        v_encontrado := TRUE;
+
+    end loop;
+
+	IF NOT v_encontrado THEN
+        DBMS_OUTPUT.PUT_LINE('NO HAY DATOS');
+    END IF;
+
+    
+    CLOSE datos;
+end;
+/
