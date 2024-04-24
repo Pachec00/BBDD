@@ -105,7 +105,7 @@ declare
 
 
 begin
-    open c_nombre;
+    
     for estudiante in c_nombre loop
         v_nombre := estudiante.nombre;
         v_apellidos := estudiante.apellidos;
@@ -118,7 +118,7 @@ begin
         v_contador := v_contador + 1;
     end loop;
     
-    close c_nombre;
+    
     
     DBMS_OUTPUT.PUT_LINE('Numero de filas recuperadas: ' || v_contador);
         
