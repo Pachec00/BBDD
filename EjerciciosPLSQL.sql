@@ -128,21 +128,19 @@ end;
 /*Ejercicio 7*/
 
 declare
-    v_test varchar2(50);
+    cursor datos is select apellidos, nombre from estudiantes where nombre = 'Marta';
     v_nombre estudiantes.nombre%type;
 	v_apellidos estudiantes.apellidos%type;
-	v_encontrado boolean := false
-    cursor datos is select apellidos, nombre from estudiantes where nombre = 'Marta';
+	v_encontrado boolean := false;
     
 begin
     open datos;
 	
-
 	while true loop
         fetch datos into v_apellidos, v_nombre;
 		exit when datos%notfound;
-
-		DBMS_OUTPUT.PUT_LINE(v_apellidos || ', ' || v_nombre);
+        
+		DBMS_OUTPUT.PUT_LINE(upper(v_apellidos) || ', ' || upper(v_nombre));
         v_encontrado := TRUE;
 
     end loop;
@@ -153,5 +151,28 @@ begin
 
     
     CLOSE datos;
+end;
+/
+
+/*Ejercicio 8*/
+
+declare
+    cursor datos is select apellidos, nombre from estudiantes where nombre = 'Marta';
+    v_nombre estudiantes.nombre%type;
+	v_apellidos estudiantes.apellidos%type;
+    v_contador int := 0;
+
+begin
+    for estudiante in datos loop
+        v_nombre := estudiante.nombre;
+        v_apellidos := estudiante.apellidos;
+        
+        DBMS_OUTPUT.PUT_LINE(upper(v_apellidos) || ', ' || upper(v_nombre));
+        v_contador := v_contador + 1;
+    end loop;
+    
+    if v_contador = 0 then
+        DBMS_OUTPUT.PUT_LINE('NO HAY DATOS');
+    end if;
 end;
 /
