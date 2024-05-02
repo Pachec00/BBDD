@@ -11,9 +11,9 @@ begin
     v_year := &Introduzca_numero;
     
     if mod(v_year,4) = 0 then
-        DBMS_OUTPUT.PUT_LINE('El a�o es bisiesto');
+        DBMS_OUTPUT.PUT_LINE('El año es bisiesto');
     else
-        DBMS_OUTPUT.PUT_LINE('El a�o no es bisiesto');
+        DBMS_OUTPUT.PUT_LINE('El año no es bisiesto');
     end if;
 end;
 /
@@ -30,14 +30,47 @@ begin
     fecha1 := '01/01/'|| v_year;
     
     if fecha-fecha1+1 = 366 then
-        DBMS_OUTPUT.PUT_LINE('El a�o es bisiesto');
+        DBMS_OUTPUT.PUT_LINE('El año es bisiesto');
     else
-        DBMS_OUTPUT.PUT_LINE('El a�o no es bisiesto');
+        DBMS_OUTPUT.PUT_LINE('El año no es bisiesto');
     end if;
     
 end;
 /
 --Ejercicio 3
+
+declare
+    numero int := &numero;
+    contP int := 1;
+    contImp int := 1;
+    TYPE NUMEROS IS TABLE OF INTEGER
+    INDEX BY BINARY_INTEGER;
+    NUMSP NUMEROS;
+    NUMSIMP NUMEROS;
+begin
+ 
+    for i in 1..numero loop
+        if mod(i,2)=0 then
+            numsp(contp) := i;
+            contp := contp +1;
+        else
+            numsimp(contImp) := i;
+            contImp := contImp +1;
+        end if;
+    end loop;
+ 
+    DBMS_OUTPUT.PUT_LINE('Números pares:');
+    FOR j IN 1..NUMSP.COUNT LOOP
+        DBMS_OUTPUT.PUT_LINE(NUMSP(j));
+    END LOOP;
+
+ 
+    DBMS_OUTPUT.PUT_LINE('Números impares:');
+    FOR k IN 1..NUMSIMP.COUNT LOOP
+        DBMS_OUTPUT.PUT_LINE(NUMSIMP(k));
+    END LOOP;
+end;
+/
 
 --Ejercicio 4
 
@@ -116,4 +149,3 @@ end;
 --Ejercicio 41
 
 --Ejercicio 42
-
