@@ -1,151 +1,228 @@
 select * from estudiantes;
 
-
 set SERVEROUTPUT on;
 
---Ejercicio 1
-
+/*Ejercicio 1*/ /*Cursores implicitos*/
 declare
-    v_year int;
+    v_nombre varchar2(50);
+    v_apellido varchar2(50);
+    v_dni varchar2(50) := '00000000T';
 begin
-    v_year := &Introduzca_numero;
-    
-    if mod(v_year,4) = 0 then
-        DBMS_OUTPUT.PUT_LINE('El año es bisiesto');
-    else
-        DBMS_OUTPUT.PUT_LINE('El año no es bisiesto');
-    end if;
+    select nombre, apellidos into v_nombre, v_apellido from estudiantes where dni = v_dni;
+    DBMS_OUTPUT.PUT_LINE(v_nombre || ',' || v_apellido);
 end;
 /
 
---Ejercicio 2
+/*Ejercicio 2*/
 
 declare
-    v_year int;
-    fecha date;
-    fecha1 date;
+    v_dni varchar2(50);
+    v_apellido varchar2(50);
+
 begin
-    v_year :=  &Introduzca_numero;
-    fecha := to_date('31/12/' || v_year);
-    fecha1 := '01/01/'|| v_year;
+    select dni, apellidos into v_dni, v_apellido from estudiantes where nombre = 'Blanca';
+    DBMS_OUTPUT.PUT_LINE(v_dni || ',' || v_apellido);
     
-    if fecha-fecha1+1 = 366 then
-        DBMS_OUTPUT.PUT_LINE('El año es bisiesto');
-    else
-        DBMS_OUTPUT.PUT_LINE('El año no es bisiesto');
-    end if;
-    
+    exception
+        when too_many_rows then
+        DBMS_OUTPUT.PUT_LINE('Fallo');
 end;
 /
---Ejercicio 3
+
+/*Ejercicio 3*/ /*Cursores explicitos*/
 
 declare
-    numero int := &numero;
-    contP int := 1;
-    contImp int := 1;
-    TYPE NUMEROS IS TABLE OF INTEGER
-    INDEX BY BINARY_INTEGER;
-    NUMSP NUMEROS;
-    NUMSIMP NUMEROS;
+    cursor c_nombre is select nombre, apellidos, dni from estudiantes;
+    v_nombre estudiantes.nombre%type;
+    v_apellidos estudiantes.apellidos%type;
+    v_dni estudiantes.dni%type;
 begin
- 
-    for i in 1..numero loop
-        if mod(i,2)=0 then
-            numsp(contp) := i;
-            contp := contp +1;
-        else
-            numsimp(contImp) := i;
-            contImp := contImp +1;
-        end if;
+    open c_nombre;
+    fetch c_nombre into v_nombre, v_apellidos, v_dni;
+    
+    DBMS_OUTPUT.PUT_LINE('Nombre del estudiante: ' || v_nombre);
+
+    
+    CLOSE c_nombre;
+end;
+/
+
+/*Ejercicio 4*/
+
+declare
+    cursor c_nombre is select nombre, apellidos, dni from estudiantes;
+    v_nombre estudiantes.nombre%type;
+    v_apellidos estudiantes.apellidos%type;
+    v_dni estudiantes.dni%type;
+    v_contador int := 0;
+begin
+    open c_nombre;
+    loop
+        fetch c_nombre into v_nombre, v_apellidos, v_dni;
+        exit when c_nombre%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Nombre del estudiante: ' || v_nombre || ', Apellidos :' || v_apellidos || ', DNI : ' || v_dni);
+        v_contador := v_contador + 1;
     end loop;
- 
-    DBMS_OUTPUT.PUT_LINE('Números pares:');
-    FOR j IN 1..NUMSP.COUNT LOOP
-        DBMS_OUTPUT.PUT_LINE(NUMSP(j));
-    END LOOP;
-
- 
-    DBMS_OUTPUT.PUT_LINE('Números impares:');
-    FOR k IN 1..NUMSIMP.COUNT LOOP
-        DBMS_OUTPUT.PUT_LINE(NUMSIMP(k));
-    END LOOP;
+    
+    close c_nombre;
+    
+    DBMS_OUTPUT.PUT_LINE('Numero de filas recuperadas: ' || v_contador);
 end;
 /
 
---Ejercicio 4
+/*Ejercicio 5*/
 
---Ejercicio 5
+declare
+    cursor c_nombre is select nombre, fecha_nacimiento from estudiantes;
+    v_nombre estudiantes.nombre%type;
+    v_fecha estudiantes.fecha_nacimiento%type;
+    v_contador int := 0;
 
---Ejercicio 6
+begin
+    open c_nombre;
+    fetch c_nombre into v_nombre, v_fecha;
+    while c_nombre%FOUND LOOP
+        fetch c_nombre into v_nombre, v_fecha;
+        DBMS_OUTPUT.PUT_LINE('Nombre del estudiante: ' || v_nombre || ', Fecha de nacimiento :' || v_fecha);
+        v_contador := v_contador + 1;
+    end loop;
+    
+    close c_nombre;
+    
+    DBMS_OUTPUT.PUT_LINE('Numero de filas recuperadas: ' || v_contador);
+    
+end;
+/
 
---Ejercicio 7
+/*Ejercicio 6*/
 
---Ejercicio 8
+declare
+    cursor c_nombre is select nombre, apellidos, fecha_nacimiento from estudiantes;
+    v_nombre estudiantes.nombre%type;
+    v_apellidos estudiantes.apellidos%type;
+    v_fecha estudiantes.fecha_nacimiento%type;
+    v_contador int := 0;
 
---Ejercicio 9
 
---Ejercicio 10
+begin
+    
+    for estudiante in c_nombre loop
+        v_nombre := estudiante.nombre;
+        v_apellidos := estudiante.apellidos;
+        v_fecha := estudiante.fecha_nacimiento;
+        
+        DBMS_OUTPUT.PUT_LINE('Nombre: ' || v_nombre);
+        DBMS_OUTPUT.PUT_LINE('Apellidos: ' || v_apellidos);
+        DBMS_OUTPUT.PUT_LINE('Fecha de nacimiento: ' || v_fecha);
+        
+        v_contador := v_contador + 1;
+    end loop;
+    
+    
+    
+    DBMS_OUTPUT.PUT_LINE('Numero de filas recuperadas: ' || v_contador);
+        
+end;
+/
 
---Ejercicio 11
+/*Ejercicio 7*/
 
---Ejercicio 12
+declare
+    cursor datos is select apellidos, nombre from estudiantes where nombre = 'Marta';
+    v_nombre estudiantes.nombre%type;
+	v_apellidos estudiantes.apellidos%type;
+	v_encontrado boolean := false;
+    
+begin
+    open datos;
+	
+	while true loop
+        fetch datos into v_apellidos, v_nombre;
+		exit when datos%notfound;
+        
+		DBMS_OUTPUT.PUT_LINE(upper(v_apellidos) || ', ' || upper(v_nombre));
+        v_encontrado := TRUE;
 
---Ejercicio 13
+    end loop;
 
---Ejercicio 14
+	IF NOT v_encontrado THEN
+        DBMS_OUTPUT.PUT_LINE('NO HAY DATOS');
+    END IF;
 
---Ejercicio 15
+    
+    CLOSE datos;
+end;
+/
 
---Ejercicio 16
+/*Ejercicio 8*/
 
---Ejercicio 17
+declare
+    cursor datos is select apellidos, nombre from estudiantes where nombre = 'Marta';
+    v_nombre estudiantes.nombre%type;
+	v_apellidos estudiantes.apellidos%type;
+    v_contador int := 0;
 
---Ejercicio 18
+begin
+    for estudiante in datos loop
+        v_nombre := estudiante.nombre;
+        v_apellidos := estudiante.apellidos;
+        
+        DBMS_OUTPUT.PUT_LINE(upper(v_apellidos) || ', ' || upper(v_nombre));
+        v_contador := v_contador + 1;
+    end loop;
+    
+    if v_contador = 0 then
+        DBMS_OUTPUT.PUT_LINE('NO HAY DATOS');
+    end if;
+end;
+/
 
---Ejercicio 19
+/*Ejercicios de procedimientos*/
 
---Ejercicio 20
+select * from emp;
 
---Ejercicio 21
+/*Ejercicio 1*/
 
---Ejercicio 22
+create or replace procedure consultarEmpleado(
+    v_empno emp.empno%type,
+    v_ename out emp.ename%type,
+    v_job out  emp.job%type
+    )
+is
+begin
+    select ename, job into v_ename, v_job from emp where empno = v_empno;
+end;
+/
 
---Ejercicio 23
 
---Ejercicio 24
 
---Ejercicio 25
+/*Ejercicios de paquetes*/
 
---Ejercicio 26
+/*Ejercicio 2*/
 
---Ejercicio 27
+create or replace package body gestionEMP is
 
---Ejercicio 28
+    procedure nuevoEmpleado
+    is
+    v_empno emp.empno%type := 800;
+    v_ename emp.ename%type := 'JUAN';
+    v_job emp.job%type := 'CLERK';
+    v_mgr emp.mgr%type := 7902;
+    v_hire emp.hiredate%typpe := '01/05/22';
+    v_sal emp.sal%type := 1500;
+    v_comm emp.comm%type := null;
+    v_deptno emp.deptno := 20;
+    
+        begin
+            DBMS_OUTPUT.PUT_LINE('');
+    end nuevoEmpleado;
+    
 
---Ejercicio 29
+end gestionEMP; 
 
---Ejercicio 30
 
---Ejercicio 31
 
---Ejercicio 32
 
---Ejercicio 33
 
---Ejercicio 34
 
---Ejercicio 35
 
---Ejercicio 36
-
---Ejercicio 37
-
---Ejercicio 38
-
---Ejercicio 39
-
---Ejercicio 40
-
---Ejercicio 41
-
---Ejercicio 42
